@@ -273,13 +273,42 @@ Replace the placeholder values with your own credentials.
 
 # Running the Application
 
-The frontend and backend run as separate processes during local development.
+The application requires **three terminals** during local development:
 
-You need **two terminals**.
+- Terminal 1 → Elasticsearch
+- Terminal 2 → Backend + BullMQ Worker
+- Terminal 3 → Frontend
+
+All three services must be running for the application to work correctly.
 
 ---
 
-## Terminal 1 — Backend
+## Terminal 1 — Elasticsearch
+
+Open **Terminal 1** and start Elasticsearch from its `bin` directory.
+
+On Windows:
+
+```bash
+cd "C:\path\to\elasticsearch\bin"
+.\elasticsearch.bat
+```
+
+Elasticsearch should be available at:
+
+```text
+https://localhost:9200
+```
+
+Keep this terminal running.
+
+> Elasticsearch must be running before starting the backend because the backend connects to Elasticsearch during startup and performs Elasticsearch indexing/synchronization.
+
+---
+
+## Terminal 2 — Backend
+
+Open **Terminal 2**.
 
 From the project root:
 
@@ -296,19 +325,15 @@ http://localhost:5000
 
 The BullMQ worker is also started with the backend.
 
+Keep this terminal running.
+
 ---
 
-## Terminal 2 — Frontend
+## Terminal 3 — Frontend
 
-Open another terminal.
+Open **Terminal 3**.
 
-Make sure you are in the project root:
-
-```bash
-cd MailVex
-```
-
-Then run:
+From the project root:
 
 ```bash
 npm run dev
@@ -320,7 +345,7 @@ The frontend will run on:
 http://localhost:5173
 ```
 
-Open the application:
+Open the application in your browser:
 
 ```text
 http://localhost:5173
@@ -330,22 +355,33 @@ http://localhost:5173
 
 # Required Services
 
-Before using the application, make sure these services are running:
+Before using the application, make sure the following services are running:
 
 ```text
-MySQL
-Redis / Memurai
-Elasticsearch
+Terminal 1 → Elasticsearch
+Terminal 2 → Backend + BullMQ Worker
+Terminal 3 → Frontend
 ```
 
-The application itself is started using:
+The backend also requires:
 
-```text
-Terminal 1 → Backend + BullMQ Worker
-Terminal 2 → Frontend
-```
+- MySQL
+- Redis / Memurai
+
+MySQL and Redis/Memurai should be running as local services before starting the backend.
 
 ---
+
+# Service Overview
+
+| Service | Purpose | Address |
+|---|---|---|
+| Elasticsearch | Email indexing and search | `https://localhost:9200` |
+| Backend | API, authentication, scheduler and worker | `http://localhost:5000` |
+| Frontend | React dashboard | `http://localhost:5173` |
+| MySQL | Persistent database | `localhost` |
+| Redis / Memurai | BullMQ and rate limiting | `127.0.0.1:6379` |
+
 
 # BullMQ Dashboard
 
