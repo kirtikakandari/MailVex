@@ -1,8 +1,6 @@
 # MailVex — Email Scheduler & Automation Platform
 
-MailVex is a full-stack email scheduling and automation platform built as a ReachInbox Full-Stack Engineer assessment.
-
-It supports scheduled and bulk email sending, persistent BullMQ jobs, Redis-backed rate limiting, Elasticsearch indexing, Google OAuth, Slack rate-limit notifications, and a React dashboard.
+The application supports scheduled and bulk email sending, persistent BullMQ jobs, Redis-backed rate limiting, Elasticsearch indexing, Google OAuth, Slack notifications, and a React dashboard.
 
 ---
 
@@ -13,21 +11,23 @@ It supports scheduled and bulk email sending, persistent BullMQ jobs, Redis-back
 - Schedule emails for a specific start time
 - Send emails immediately
 - Bulk recipient import through CSV
-- Configurable delay between individual emails
+- Configurable delay between emails
 - Configurable hourly email limit
 - Redis-backed rate limiting
 - Automatic rescheduling when the hourly limit is reached
 - BullMQ delayed jobs
 - Configurable BullMQ worker concurrency
-- Idempotent email processing to prevent duplicate sends
+- Idempotent email processing
 - MySQL persistence
 - Ethereal SMTP email delivery
 - Elasticsearch indexing
 - BullMQ live queue dashboard
 - Slack OAuth integration
 - Slack rate-limit notifications
-- Scheduled and sent email dashboard
-- Loading, empty, and error states
+- Scheduled emails dashboard
+- Sent emails dashboard
+- Loading and empty states
+- Error handling
 - Tested with 1000+ scheduled emails
 
 ---
@@ -38,8 +38,8 @@ It supports scheduled and bulk email sending, persistent BullMQ jobs, Redis-back
 
 - React
 - TypeScript
-- Tailwind CSS
 - Vite
+- Tailwind CSS
 
 ## Backend
 
@@ -60,7 +60,7 @@ It supports scheduled and bulk email sending, persistent BullMQ jobs, Redis-back
 # Project Structure
 
 ```text
-MailVex/
+reachinbox-frontend/
 │
 ├── backend/
 │   ├── src/
@@ -73,41 +73,73 @@ MailVex/
 │   │   ├── auth.ts
 │   │   ├── slack.ts
 │   │   ├── routes/
+│   │   │   ├── authRoutes.ts
+│   │   │   └── emailRoutes.ts
 │   │   ├── middleware/
+│   │   │   └── requireAuth.ts
 │   │   └── utils/
+│   │       └── dateUtils.ts
 │   │
 │   ├── .env
 │   ├── package.json
 │   └── tsconfig.json
 │
+├── public/
+│
 ├── src/
 │   ├── App.tsx
 │   ├── pages/
+│   │   ├── Login.tsx
+│   │   ├── Dashboard.tsx
+│   │   ├── Compose.tsx
+│   │   └── EmailDetail.tsx
 │   ├── components/
+│   │   ├── Sidebar.tsx
+│   │   ├── Header.tsx
+│   │   ├── EmailRow.tsx
+│   │   └── ProfileMenu.tsx
 │   ├── services/
+│   │   ├── api.ts
+│   │   └── auth.ts
 │   ├── hooks/
+│   │   └── useAuth.ts
 │   └── types/
+│       └── email.ts
 │
+├── .gitignore
+├── .olxtrc.json
+├── index.html
 ├── package.json
-└── README.md
+├── package-lock.json
+├── README.md
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+└── vite.config.ts
 ```
 
 ---
 
 # Prerequisites
 
-Install the following before running the project:
+Make sure the following are installed and running:
 
 - Node.js
 - MySQL
-- Redis or Memurai
+- Redis / Memurai
 - Elasticsearch
 
 ---
 
-# Installation & Setup
+# Installation
 
 ## 1. Clone the Repository
+
+GitHub repository:
+
+https://github.com/kirtikakandari/MailVex
+
+Clone it using:
 
 ```bash
 git clone https://github.com/kirtikakandari/MailVex.git
@@ -116,9 +148,7 @@ cd MailVex
 
 ---
 
-## 2. Install Dependencies
-
-### Frontend
+# 2. Install Frontend Dependencies
 
 From the project root:
 
@@ -126,7 +156,9 @@ From the project root:
 npm install
 ```
 
-### Backend
+---
+
+# 3. Install Backend Dependencies
 
 Open a terminal and run:
 
@@ -137,7 +169,7 @@ npm install
 
 ---
 
-# 3. Configure MySQL
+# 4. Configure MySQL
 
 Create the database:
 
@@ -155,15 +187,15 @@ Make sure MySQL is running before starting the backend.
 
 ---
 
-# 4. Configure Redis
+# 5. Configure Redis / Memurai
 
-Make sure Redis/Memurai is running on:
+The application expects Redis to run on:
 
 ```text
 127.0.0.1:6379
 ```
 
-For Memurai, verify the connection with:
+If using Memurai, check that it is running:
 
 ```bash
 memurai-cli ping
@@ -177,7 +209,7 @@ PONG
 
 ---
 
-# 5. Configure Elasticsearch
+# 6. Configure Elasticsearch
 
 Make sure Elasticsearch is running at:
 
@@ -185,11 +217,11 @@ Make sure Elasticsearch is running at:
 https://localhost:9200
 ```
 
-Elasticsearch credentials are provided through environment variables.
+Elasticsearch authentication details are provided through environment variables.
 
 ---
 
-# 6. Configure Environment Variables
+# 7. Configure Environment Variables
 
 Create the following file:
 
@@ -197,7 +229,7 @@ Create the following file:
 backend/.env
 ```
 
-Use the following structure:
+Use this structure:
 
 ```env
 PORT=5000
@@ -235,13 +267,19 @@ WORKER_CONCURRENCY=5
 
 Replace the placeholder values with your own credentials.
 
-**Do not commit the real `.env` file to GitHub.**
+**Never commit the real `.env` file or secrets to GitHub.**
 
 ---
 
-# 7. Start the Backend
+# Running the Application
 
-Open **Terminal 1**.
+The frontend and backend run as separate processes during local development.
+
+You need **two terminals**.
+
+---
+
+## Terminal 1 — Backend
 
 From the project root:
 
@@ -256,15 +294,21 @@ The backend will run on:
 http://localhost:5000
 ```
 
-The BullMQ email worker is also started with the backend.
+The BullMQ worker is also started with the backend.
 
 ---
 
-# 8. Start the Frontend
+## Terminal 2 — Frontend
 
-Open **Terminal 2**.
+Open another terminal.
 
-From the project root:
+Make sure you are in the project root:
+
+```bash
+cd MailVex
+```
+
+Then run:
 
 ```bash
 npm run dev
@@ -276,7 +320,7 @@ The frontend will run on:
 http://localhost:5173
 ```
 
-Open the application in your browser:
+Open the application:
 
 ```text
 http://localhost:5173
@@ -284,28 +328,22 @@ http://localhost:5173
 
 ---
 
-# Running the Application
+# Required Services
 
-You need two terminals for local development.
+Before using the application, make sure these services are running:
 
-### Terminal 1 — Backend
-
-```bash
-cd backend
-npm run dev
+```text
+MySQL
+Redis / Memurai
+Elasticsearch
 ```
 
-### Terminal 2 — Frontend
+The application itself is started using:
 
-```bash
-npm run dev
+```text
+Terminal 1 → Backend + BullMQ Worker
+Terminal 2 → Frontend
 ```
-
-The following services must also be running:
-
-- MySQL
-- Redis/Memurai
-- Elasticsearch
 
 ---
 
@@ -333,7 +371,7 @@ Users can:
 
 1. Enter an email subject.
 2. Enter an email body.
-3. Upload a CSV containing recipient email addresses.
+3. Upload a CSV containing email addresses.
 4. View the number of detected recipients.
 5. Set a start time.
 6. Configure the delay between emails.
@@ -345,20 +383,36 @@ Scheduled emails are stored in MySQL and added to BullMQ as delayed jobs.
 
 ---
 
+# CSV Upload
+
+The application supports bulk email scheduling through CSV files.
+
+The frontend:
+
+- Accepts a CSV file.
+- Parses the recipient email addresses.
+- Displays the number of detected recipients.
+- Sends the recipient list to the backend.
+- Allows the uploaded CSV to be removed before scheduling.
+
+This allows large batches of emails to be scheduled at once.
+
+---
+
 # Rate Limiting
 
-The application uses Redis-backed hourly rate limiting.
+The application uses a Redis-backed hourly rate limiter.
 
 The hourly limit is configurable from the compose interface.
 
-The rate-limit counter is stored in Redis rather than worker memory, allowing multiple concurrent workers to safely share the same rate-limit state.
+The rate-limit counter is stored in Redis rather than only in worker memory, allowing concurrent workers to share the same rate-limit state.
 
 When the hourly limit is reached:
 
 1. The email is not dropped.
-2. The job is rescheduled for the next available hour.
-3. The scheduled time is updated in MySQL.
-4. Email processing continues for the remaining jobs.
+2. The rate-limit counter is handled safely.
+3. The job is rescheduled for the next available hour.
+4. The scheduled time is updated in MySQL.
 5. A Slack notification is sent if Slack is connected.
 
 This ensures that emails exceeding the hourly limit remain scheduled instead of being permanently failed.
@@ -369,21 +423,21 @@ This ensures that emails exceeding the hourly limit remain scheduled instead of 
 
 The application supports a configurable delay between individual email sends.
 
-The delay is configured from the compose interface and is used when scheduling email jobs.
+The delay is configured from the compose interface and is applied when scheduling email jobs.
 
-This is used to mimic provider throttling and avoid sending all emails simultaneously.
+This helps mimic provider throttling and prevents all emails from being sent simultaneously.
 
 ---
 
 # Worker Concurrency
 
-BullMQ worker concurrency is configurable using:
+BullMQ worker concurrency is configurable through:
 
 ```env
 WORKER_CONCURRENCY=5
 ```
 
-This controls how many email jobs can be processed concurrently.
+This controls the number of email jobs that can be processed concurrently.
 
 The worker uses Redis-backed rate limiting and MySQL status checks to safely handle concurrent jobs.
 
@@ -391,13 +445,13 @@ The worker uses Redis-backed rate limiting and MySQL status checks to safely han
 
 # Persistence & Restart Safety
 
-Email jobs are scheduled using BullMQ delayed jobs backed by Redis.
+Email scheduling is handled using BullMQ delayed jobs backed by Redis.
 
-Because jobs are persisted in Redis, future scheduled emails are not lost when the backend server restarts.
+Because the jobs are persisted in Redis, future scheduled emails are not lost when the backend server restarts.
 
-Email state is also persisted in MySQL.
+Email state is also stored in MySQL.
 
-The worker checks the current email status before sending.
+Before sending an email, the worker checks its current status.
 
 If an email is already marked as:
 
@@ -407,7 +461,7 @@ sent
 
 the worker skips the job.
 
-This provides idempotency and prevents duplicate email sends when jobs are retried or workers restart.
+This provides idempotency and helps prevent duplicate email sends during retries or server/worker restarts.
 
 ---
 
@@ -415,31 +469,31 @@ This provides idempotency and prevents duplicate email sends when jobs are retri
 
 Email records are indexed in Elasticsearch.
 
-The application indexes email information so that scheduled and sent email data can be searched.
+The application maintains indexed email data for scheduled and sent emails.
 
-Existing email records are synchronized with Elasticsearch when the backend starts.
+Elasticsearch is also synchronized with existing email records when the backend starts.
 
 ---
 
 # Slack Integration
 
-MailVex supports Slack OAuth integration for rate-limit notifications.
+The application supports Slack OAuth for rate-limit notifications.
 
 ## Slack OAuth Flow
 
-1. User connects Slack.
+1. User connects Slack from the application.
 2. MailVex generates an OAuth state value.
-3. User authorizes the application in Slack.
+3. The user authorizes MailVex in Slack.
 4. Slack redirects back to the backend.
 5. The backend exchanges the OAuth authorization code.
-6. The Slack connection is stored in MySQL.
+6. Slack connection information is stored in MySQL.
 7. Rate-limit notifications are sent to the connected Slack channel.
 
-When the hourly email limit is reached, the application sends a live Slack notification.
+When the hourly email limit is reached, a live Slack notification is sent.
 
-If Slack is not connected, the rate-limit logic continues normally without breaking email processing.
+If Slack is not connected, rate-limit handling continues normally without crashing the email worker.
 
-Slack connections can be disconnected and reconnected.
+Slack can also be disconnected and reconnected.
 
 ---
 
@@ -461,34 +515,39 @@ Users can also log out.
 
 ## Email & Password
 
-Users can create an account and authenticate using email and password.
+The application also supports email/password authentication.
 
-Passwords are securely hashed before being stored in the database.
+New users can create an account, and existing users can log in using their email and password.
+
+Passwords are hashed before being stored.
 
 ---
 
-# Bulk CSV Upload
+# Dashboard
 
-Users can upload a CSV containing email addresses.
+The dashboard provides:
 
-The frontend:
+- Scheduled Emails
+- Sent Emails
+- Email counts
+- Email status
+- Scheduled time
+- Sent time
+- Recipient email
+- Subject
+- Refresh functionality
 
-- Parses the uploaded file.
-- Detects email addresses.
-- Displays the number of recipients.
-- Sends the recipient list to the backend for scheduling.
-
-This allows large groups of recipients to be scheduled at once.
+The dashboard also provides loading and empty states.
 
 ---
 
 # Behavior Under Load
 
-The application was tested with **1000+ emails scheduled for approximately the same time**.
+The application has been tested with **1000+ emails scheduled for approximately the same time**.
 
-BullMQ handles the scheduled jobs rather than creating thousands of independent application timers.
+BullMQ handles the scheduled jobs instead of creating thousands of independent application timers.
 
-When the configured hourly limit would be exceeded, remaining jobs are rescheduled into the next available hour instead of being dropped.
+When the hourly limit would be exceeded, remaining jobs are rescheduled into the next available hour instead of being dropped.
 
 ---
 
@@ -508,7 +567,7 @@ The application has been tested for:
 - Elasticsearch indexing
 - Google OAuth
 - Slack OAuth
-- Live Slack rate-limit notifications
+- Slack rate-limit notifications
 - Scheduled email dashboard
 - Sent email dashboard
 
@@ -542,18 +601,16 @@ Make sure `.env` is included in `.gitignore`.
 
 ---
 
-# Local Development
+# Local Development Summary
 
-The application currently runs as two development processes.
-
-### Backend
+### Start Backend
 
 ```bash
 cd backend
 npm run dev
 ```
 
-### Frontend
+### Start Frontend
 
 From the project root:
 
@@ -561,13 +618,31 @@ From the project root:
 npm run dev
 ```
 
-Required services:
+### Open Frontend
 
 ```text
-MySQL
-Redis / Memurai
-Elasticsearch
+http://localhost:5173
 ```
+
+### Backend
+
+```text
+http://localhost:5000
+```
+
+### BullMQ Dashboard
+
+```text
+http://localhost:5000/admin/queues
+```
+
+---
+
+# Repository
+
+GitHub:
+
+https://github.com/kirtikakandari/MailVex
 
 ---
 
@@ -587,4 +662,5 @@ MailVex demonstrates:
 - Bulk CSV email scheduling
 - Live BullMQ queue monitoring
 - React + TypeScript dashboard
-- Real-time Slack rate-limit notifications
+- Configurable worker concurrency
+- 1000+ email scheduling under load
